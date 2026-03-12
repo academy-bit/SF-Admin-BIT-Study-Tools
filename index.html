@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salesforce Admin — Study Priority Calculator</title>
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<main>
+
+<h1 id="title">Salesforce Administrator — What to Study Next</h1>
+
+<p class="note">
+Enter your most recent % scores (0–100) for each topic. The calculator ranks
+where you can gain the most points based on the Admin exam weighting.
+</p>
+
+<section aria-labelledby="inputs-h2">
+
+<h2 id="inputs-h2">Inputs</h2>
+
+<p class="note">
+All eight fields are required. Use whole numbers (0–100). Press <strong>Tab</strong> to move between fields.
+</p>
+
+<div class="grid" role="form">
+
+<label for="f1">Configuration & Setup</label>
+<input id="f1" type="number" min="0" max="100" required>
+
+<label for="f2">Object Manager & Lightning App Builder</label>
+<input id="f2" type="number" min="0" max="100" required>
+
+<label for="f3">Sales & Marketing Applications</label>
+<input id="f3" type="number" min="0" max="100" required>
+
+<label for="f4">Service & Support Applications</label>
+<input id="f4" type="number" min="0" max="100" required>
+
+<label for="f5">Productivity & Collaboration</label>
+<input id="f5" type="number" min="0" max="100" required>
+
+<label for="f6">Data & Analytics Management</label>
+<input id="f6" type="number" min="0" max="100" required>
+
+<label for="f7">Automation</label>
+<input id="f7" type="number" min="0" max="100" required>
+
+<label for="f8">Agentforce</label>
+<input id="f8" type="number" min="0" max="100" required>
+
+</div>
+
+<div class="controls">
+<button id="calc" type="button">Calculate</button>
+<button id="reset" type="button">Clear</button>
+</div>
+
+</section>
+
+<section aria-labelledby="results-h2">
+
+<h2 id="results-h2">Results</h2>
+
+<p id="status" role="status" aria-live="polite"></p>
+
+<table>
+
+<thead>
+<tr>
+<th>Topic</th>
+<th>% Weight</th>
+<th>Your Score</th>
+<th>Weighted Score</th>
+<th>Points Achieved</th>
+<th>Additional Points Available</th>
+</tr>
+</thead>
+
+<tbody id="tbody"></tbody>
+
+</table>
+
+</section>
+
+</main>
+
+<script>
+
+const topics = [
+
+{ name:"Configuration & Setup", weight:0.15, id:"f1"},
+{ name:"Object Manager & Lightning App Builder", weight:0.15, id:"f2"},
+{ name:"Sales & Marketing Applications", weight:0.10, id:"f3"},
+{ name:"Service & Support Applications", weight:0.10, id:"f4"},
+{ name:"Productivity & Collaboration", weight:0.10, id:"f5"},
+{ name:"Data & Analytics Management", weight:0.17, id:"f6"},
+{ name:"Automation", weight:0.15, id:"f7"},
+{ name:"Agentforce", weight:0.08, id:"f8"}
+
+];
+
+const tbody = document.getElementById("tbody");
+const status = document.getElementById("status");
+
+function format(n){
+return Number.isFinite(n) ? n.toFixed(2) : "";
+}
+
+function calculate(){
+
+tbody.innerHTML="";
+
+let rows=[];
+
+for(const topic of topics){
+
+const raw = parseInt(document.getElementById(topic.id).value,10);
+
+if(isNaN(raw)){
+
+status.textContent="Please enter all eight scores (0–100).";
+return;
+
+}
+
+const score=Math.max(0,Math.min(100,raw));
+
+const weighted=(score/100)*topic.weight;
+
+const achieved=weighted*100;
+
+const additional=(topic.weight*100)-achieved;
+
+rows.push({...topic,score,weighted,achieved,additional});
+
+}
+
+rows.forEach(r=>{
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>${r.name}</td>
+<td>${format(r.weight*100)}%</td>
+<td>${r.score}</td>
+<td>${format(r.weighted)}</td>
+<td>${format(r.achieved)}</td>
+<td>${format(r.additional)}</td>
+
+`;
+
+tbody.appendChild(tr);
+
+});
+
+const sorted=[...rows].sort((a,b)=>b.additional-a.additional);
+
+const top=sorted[0];
+
+const second=sorted[1];
+
+status.textContent=
+"It looks like you could gain the most points by studying "+top.name+
+(second ? ". If you're tired of that, consider "+second.name+"." : ".");
+
+}
+
+function resetAll(){
+
+document.querySelectorAll("input").forEach(i=>i.value="");
+
+tbody.innerHTML="";
+status.textContent="";
+
+document.getElementById("f1").focus();
+
+}
+
+document.getElementById("calc").addEventListener("click",calculate);
+
+document.getElementById("reset").addEventListener("click",resetAll);
+
+window.addEventListener("load",()=>{
+
+document.getElementById("f1").focus();
+
+});
+
+</script>
+
+</body>
+</html>
