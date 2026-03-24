@@ -1,0 +1,135 @@
+/* Flashcard styles originally created for course use and adapted for reusable module pages */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  background: #ffffff;
+  color: #111111;
+}
+
+.flashcards-page {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 22rem;
+  min-height: 14rem;
+  margin: 1.5rem auto 1rem;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 4px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 14rem;
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+}
+
+.card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid #333333;
+  border-radius: 0.5rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.card-front {
+  background: #ffffff;
+  color: #111111;
+}
+
+.card-back {
+  background: #f3f3f3;
+  color: #111111;
+  transform: rotateY(180deg);
+}
+
+.progress {
+  margin: 1rem 0 0;
+  font-weight: 700;
+}
+
+.controls {
+  margin-top: 1rem;
+}
+
+button {
+  margin: 0.25rem;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 1px solid #005ea2;
+  border-radius: 0.375rem;
+  background: #0078d4;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005ea2;
+}
+
+button:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  background: #cccccc;
+  border-color: #aaaaaa;
+  color: #444444;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 1.5rem;
+  font-weight: 700;
+}
+
+.end-message {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.restart-wrap {
+  margin-top: 1rem;
+}
