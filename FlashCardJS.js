@@ -16,6 +16,7 @@ const elements = {
   cardInner: document.getElementById("cardInner"),
   cardFront: document.getElementById("cardFront"),
   cardBack: document.getElementById("cardBack"),
+  srCardText: document.getElementById("srCardText"),
   progress: document.getElementById("progress"),
   controls: document.getElementById("controls"),
   statusMessage: document.getElementById("statusMessage"),
@@ -133,6 +134,7 @@ function renderCard() {
   elements.cardBack.textContent = currentCard.back;
 
   updateFlipState();
+  updateReadableCardText();
   updateProgress();
   updateButtons();
 
@@ -154,6 +156,19 @@ function updateFlipState() {
   }
 }
 
+function updateReadableCardText() {
+  const currentCard = state.cards[state.currentIndex];
+
+  if (!currentCard || !elements.srCardText) {
+    return;
+  }
+
+  const visibleSide = state.flipped ? "Back" : "Front";
+  const visibleText = state.flipped ? currentCard.back : currentCard.front;
+
+  elements.srCardText.textContent = `${visibleSide}: ${visibleText}`;
+}
+
 function updateProgress() {
   elements.progress.textContent = `Card ${state.currentIndex + 1} of ${state.cards.length}`;
 }
@@ -169,6 +184,7 @@ function flipCard() {
 
   state.flipped = !state.flipped;
   updateFlipState();
+  updateReadableCardText();
   elements.flashcard.focus();
 }
 
@@ -197,6 +213,10 @@ function showCompletionState() {
   elements.flashcard.hidden = true;
   elements.controls.hidden = true;
   elements.progress.hidden = true;
+
+  if (elements.srCardText) {
+    elements.srCardText.textContent = "You’ve completed all the flashcards.";
+  }
 
   elements.statusMessage.innerHTML = `
     <div class="end-message">You’ve completed all the flashcards.</div>
@@ -227,6 +247,11 @@ function showEmptyState(message) {
   elements.flashcard.hidden = true;
   elements.controls.hidden = true;
   elements.progress.hidden = true;
+
+  if (elements.srCardText) {
+    elements.srCardText.textContent = "";
+  }
+
   setStatus(message);
 }
 
