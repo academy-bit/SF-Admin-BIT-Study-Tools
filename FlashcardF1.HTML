@@ -5,19 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foundations Module 1 Flashcards</title>
 
-  <link rel="stylesheet" href="../css/main.css">
-  <link rel="stylesheet" href="FlashCardStyles.css">
+  <link rel="stylesheet" href="flashcards.css">
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script defer src="FlashCardJS.js"></script>
+  <script defer src="flashcards.js"></script>
 </head>
 <body
-  data-sheet-url="https://docs.google.com/spreadsheets/d/e/2PACX-1vT0D3KrPGD0aWICyomVjZwwgx6eZNARFpFIqPgF4H78Bp9_QwZ1RZC6oTqzyl-FrcpEeZdZfa345kCE/pub?output=csv"
+  data-sheet-url="PASTE_YOUR_REAL_PUBLISHED_CSV_URL_HERE"
   data-module-title="Foundations Module 1 Flashcards"
   data-header-rows="2"
 >
   <main class="flashcards-page">
-    <h1 id="pageTitle">Module 1 Flashcards</h1>
+    <h1 id="pageTitle">Foundations Module 1 Flashcards</h1>
 
     <div
       id="flashcard"
@@ -25,13 +24,14 @@
       tabindex="0"
       role="button"
       aria-label="Flashcard. Press Enter or Space to flip."
-      aria-live="polite"
     >
       <div id="cardInner" class="card-inner">
         <div id="cardFront" class="card-front" aria-hidden="false"></div>
         <div id="cardBack" class="card-back" aria-hidden="true"></div>
       </div>
     </div>
+
+    <div id="srCardText" class="sr-card-text" aria-live="polite"></div>
 
     <p id="progress" class="progress" aria-live="polite"></p>
 
