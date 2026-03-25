@@ -1,5 +1,7 @@
 const config = {
-  sheetUrl: document.body.dataset.sheetUrl || "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0D3KrPGD0aWICyomVjZwwgx6eZNARFpFIqPgF4H78Bp9_QwZ1RZC6oTqzyl-FrcpEeZdZfa345kCE/pub?output=csv",
+  sheetUrl:
+    document.body.dataset.sheetUrl ||
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0D3KrPGD0aWICyomVjZwwgx6eZNARFpFIqPgF4H78Bp9_QwZ1RZC6oTqzyl-FrcpEeZdZfa345kCE/pub?output=csv",
   moduleTitle: document.body.dataset.moduleTitle || "Flashcards",
   headerRowsToSkip: Number(document.body.dataset.headerRows || 0),
 };
@@ -134,9 +136,10 @@ function renderCard() {
   elements.cardBack.textContent = currentCard.back;
 
   updateFlipState();
-  updateReadableCardText();
   updateProgress();
   updateButtons();
+
+  announceCurrentCard();
 
   elements.flashcard.hidden = false;
   elements.controls.hidden = false;
@@ -156,7 +159,7 @@ function updateFlipState() {
   }
 }
 
-function updateReadableCardText() {
+function announceCurrentCard() {
   const currentCard = state.cards[state.currentIndex];
 
   if (!currentCard || !elements.srCardText) {
@@ -165,8 +168,13 @@ function updateReadableCardText() {
 
   const visibleSide = state.flipped ? "Back" : "Front";
   const visibleText = state.flipped ? currentCard.back : currentCard.front;
+  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}. ${visibleText}`;
 
-  elements.srCardText.textContent = `${visibleSide}: ${visibleText}`;
+  elements.srCardText.textContent = "";
+
+  window.setTimeout(() => {
+    elements.srCardText.textContent = message;
+  }, 50);
 }
 
 function updateProgress() {
@@ -184,7 +192,7 @@ function flipCard() {
 
   state.flipped = !state.flipped;
   updateFlipState();
-  updateReadableCardText();
+  announceCurrentCard();
   elements.flashcard.focus();
 }
 
@@ -215,11 +223,14 @@ function showCompletionState() {
   elements.progress.hidden = true;
 
   if (elements.srCardText) {
-    elements.srCardText.textContent = "You’ve completed all the flashcards.";
+    elements.srCardText.textContent = "";
+    window.setTimeout(() => {
+      elements.srCardText.textContent = "You have completed all the flashcards.";
+    }, 50);
   }
 
   elements.statusMessage.innerHTML = `
-    <div class="end-message">You’ve completed all the flashcards.</div>
+    <div class="end-message">You have completed all the flashcards.</div>
     <div class="restart-wrap">
       <button id="restart" type="button">Restart</button>
     </div>
