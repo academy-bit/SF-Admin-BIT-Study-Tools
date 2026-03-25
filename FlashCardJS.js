@@ -1,7 +1,5 @@
 const config = {
-  sheetUrl:
-    document.body.dataset.sheetUrl ||
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0D3KrPGD0aWICyomVjZwwgx6eZNARFpFIqPgF4H78Bp9_QwZ1RZC6oTqzyl-FrcpEeZdZfa345kCE/pub?output=csv",
+  sheetUrl: document.body.dataset.sheetUrl || "",
   moduleTitle: document.body.dataset.moduleTitle || "Flashcards",
   headerRowsToSkip: Number(document.body.dataset.headerRows || 0),
 };
@@ -94,8 +92,8 @@ async function loadCards() {
       .slice(config.headerRowsToSkip)
       .filter(isValidCardRow)
       .map(([front, back]) => ({
-        front: front.trim(),
-        back: back.trim(),
+        front: String(front).trim(),
+        back: String(back).trim(),
       }));
 
     if (state.cards.length === 0) {
@@ -115,10 +113,10 @@ function isValidCardRow(row) {
   return (
     Array.isArray(row) &&
     row.length >= 2 &&
-    typeof row[0] === "string" &&
-    typeof row[1] === "string" &&
-    row[0].trim() !== "" &&
-    row[1].trim() !== ""
+    row[0] != null &&
+    row[1] != null &&
+    String(row[0]).trim() !== "" &&
+    String(row[1]).trim() !== ""
   );
 }
 
@@ -138,7 +136,7 @@ function renderCard() {
   updateFlipState();
   updateProgress();
   updateButtons();
-
+  updateFlashcardAccessibility();
   announceCurrentCard();
 
   elements.flashcard.hidden = false;
@@ -157,6 +155,22 @@ function updateFlipState() {
     elements.cardFront.setAttribute("aria-hidden", "false");
     elements.cardBack.setAttribute("aria-hidden", "true");
   }
+}
+
+function updateFlashcardAccessibility() {
+  const currentCard = state.cards[state.currentIndex];
+
+  if (!currentCard || !elements.flashcard) {
+    return;
+  }
+
+  const visibleSide = state.flipped ? "Back" : "Front";
+  const visibleText = state.flipped ? currentCard.back : currentCard.front;
+
+  elements.flashcard.setAttribute(
+    "aria-label",
+    `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}. ${visibleText}. Press Enter or Space to flip.`
+  );
 }
 
 function announceCurrentCard() {
@@ -182,7 +196,9 @@ function updateProgress() {
 }
 
 function updateButtons() {
-  elements.backButton.hidden = state.currentIndex === 0;
+  if (elements.backButton) {
+    elements.backButton.hidden = state.currentIndex === 0;
+  }
 }
 
 function flipCard() {
@@ -192,6 +208,7 @@ function flipCard() {
 
   state.flipped = !state.flipped;
   updateFlipState();
+  updateFlashcardAccessibility();
   announceCurrentCard();
   elements.flashcard.focus();
 }
@@ -237,8 +254,8 @@ function showCompletionState() {
   `;
 
   const restartButton = document.getElementById("restart");
-  restartButton.addEventListener("click", restartCards);
-  restartButton.focus();
+  restartButton?.addEventListener("click", restartCards);
+  restartButton?.focus();
 }
 
 function restartCards() {
