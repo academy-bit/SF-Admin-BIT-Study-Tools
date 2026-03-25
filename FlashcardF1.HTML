@@ -23,7 +23,8 @@
       class="card"
       tabindex="0"
       role="button"
-      aria-label="Flashcard. Press Enter or Space to flip."
+      aria-describedby="cardInstructions"
+      aria-label="Flashcard"
     >
       <div id="cardInner" class="card-inner">
         <div id="cardFront" class="card-front" aria-hidden="false"></div>
@@ -31,7 +32,17 @@
       </div>
     </div>
 
-    <div id="srCardText" class="sr-card-text" aria-live="polite"></div>
+    <p id="cardInstructions" class="sr-only">
+      Press Enter or Space to flip the flashcard.
+    </p>
+
+    <div
+      id="srCardText"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <p id="progress" class="progress" aria-live="polite"></p>
 
