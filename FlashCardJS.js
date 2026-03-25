@@ -1,5 +1,5 @@
 const config = {
-  sheetUrl: document.body.dataset.sheetUrl || "",
+  sheetUrl: document.body.dataset.sheetUrl || "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0D3KrPGD0aWICyomVjZwwgx6eZNARFpFIqPgF4H78Bp9_QwZ1RZC6oTqzyl-FrcpEeZdZfa345kCE/pub?output=csv",
   moduleTitle: document.body.dataset.moduleTitle || "Flashcards",
   headerRowsToSkip: Number(document.body.dataset.headerRows || 0),
 };
