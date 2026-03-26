@@ -54,8 +54,7 @@ function applyPageTitle() {
 }
 
 function bindEvents() {
-  elements.
-on?.addEventListener("click", flipCard);
+  elements.flipButton?.addEventListener("click", flipCard);
   elements.backButton?.addEventListener("click", goBack);
   elements.nextButton?.addEventListener("click", goNext);
 }
@@ -112,8 +111,13 @@ function renderCard() {
 
   state.flipped = false;
 
-  elements.cardFront.textContent = card.front;
-  elements.cardBack.textContent = card.back;
+  if (elements.cardFront) {
+    elements.cardFront.textContent = card.front;
+  }
+
+  if (elements.cardBack) {
+    elements.cardBack.textContent = card.back;
+  }
 
   updateFlipState();
   updateProgress();
@@ -149,7 +153,9 @@ function announce(message) {
   elements.srAnnounce.textContent = "";
 
   setTimeout(() => {
-    elements.srAnnounce.textContent = message;
+    if (elements.srAnnounce) {
+      elements.srAnnounce.textContent = message;
+    }
   }, 50);
 }
 
@@ -165,11 +171,13 @@ function updateButtons() {
   }
 
   if (elements.flipButton) {
-    elements.flipButton.textContent = state.flipped ? "Flip to Front" : "Flip to back";
+    elements.flipButton.textContent = state.flipped ? "Flip to Front" : "Flip to Back";
   }
 }
 
 function flipCard() {
+  if (state.cards.length === 0) return;
+
   state.flipped = !state.flipped;
   updateFlipState();
   updateButtons();
@@ -178,31 +186,48 @@ function flipCard() {
 
 function goBack() {
   if (state.currentIndex === 0) return;
+
   state.currentIndex--;
   renderCard();
+  elements.flipButton?.focus();
 }
 
 function goNext() {
   if (state.currentIndex < state.cards.length - 1) {
     state.currentIndex++;
     renderCard();
+    elements.flipButton?.focus();
   } else {
     showCompletionState();
   }
 }
 
 function showCompletionState() {
-  elements.flashcard.hidden = true;
-  elements.controls.hidden = true;
-  elements.progress.hidden = true;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
 
-  elements.readingText.textContent = "Congratulations! You have completed all the flashcards.";
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.textContent =
+      "Congratulations! You have completed all the flashcards.";
+  }
+
   announce("Congratulations! You have completed all the flashcards.");
 
-  elements.statusMessage.innerHTML = `
-    <div class="end-message">You have completed all the flashcards.</div>
-    <button id="restart">Restart</button>
-  `;
+  if (elements.statusMessage) {
+    elements.statusMessage.innerHTML = `
+      <div class="end-message">You have completed all the flashcards.</div>
+      <button id="restart" type="button">Restart</button>
+    `;
+  }
 
   document.getElementById("restart")?.addEventListener("click", restartCards);
 }
@@ -213,29 +238,56 @@ function restartCards() {
 
   showMainUI();
   renderCard();
+  elements.flipButton?.focus();
 }
 
 function showMainUI() {
-  elements.flashcard.hidden = false;
-  elements.controls.hidden = false;
-  elements.progress.hidden = false;
-  elements.readingText.hidden = false;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = false;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = false;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = false;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+  }
 }
 
 function showEmptyState(message) {
-  elements.flashcard.hidden = true;
-  elements.controls.hidden = true;
-  elements.progress.hidden = true;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
 
-  elements.readingText.textContent = message;
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.textContent = message;
+  }
+
   announce(message);
   setStatus(message);
 }
 
 function setStatus(message) {
-  elements.statusMessage.textContent = message;
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = message;
+  }
 }
 
 function clearStatus() {
-  elements.statusMessage.textContent = "";
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = "";
+  }
 }
