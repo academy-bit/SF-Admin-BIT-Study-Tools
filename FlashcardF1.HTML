@@ -18,38 +18,24 @@
   <main class="flashcards-page">
     <h1 id="pageTitle">Foundations Module 1 Flashcards</h1>
 
-    <div
-      id="flashcard"
-      class="card"
-      aria-describedby="cardInstructions"
-    >
+    <div id="flashcard" class="card" aria-hidden="true">
       <div id="cardInner" class="card-inner">
-        <div id="cardFront" class="card-front" aria-hidden="false"></div>
-        <div id="cardBack" class="card-back" aria-hidden="true"></div>
+        <div id="cardFront" class="card-front"></div>
+        <div id="cardBack" class="card-back"></div>
       </div>
     </div>
 
-    <p id="cardInstructions" class="sr-only">
-      Use the Flip button to reveal the other side of the flashcard.
-    </p>
-
     <div
-      id="srCardText"
+      id="srAnnounce"
       class="sr-only"
       role="status"
       aria-live="polite"
       aria-atomic="true"
     ></div>
 
-    <div
-      id="readingText"
-      class="reading-text"
-      tabindex="-1"
-      aria-live="polite"
-      aria-atomic="true"
-    ></div>
+    <div id="readingText" class="reading-text"></div>
 
-    <p id="progress" class="progress" aria-live="polite"></p>
+    <p id="progress" class="progress"></p>
 
     <div id="controls" class="controls">
       <button id="flip" type="button">Flip</button>
@@ -57,7 +43,7 @@
       <button id="next" type="button">Next</button>
     </div>
 
-    <div id="statusMessage" class="status-message" aria-live="polite"></div>
+    <div id="statusMessage" class="status-message"></div>
   </main>
 </body>
 </html>
