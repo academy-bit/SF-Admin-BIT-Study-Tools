@@ -54,7 +54,8 @@ function applyPageTitle() {
 }
 
 function bindEvents() {
-  elements.flipButton?.addEventListener("click", flipCard);
+  elements.
+on?.addEventListener("click", flipCard);
   elements.backButton?.addEventListener("click", goBack);
   elements.nextButton?.addEventListener("click", goNext);
 }
@@ -164,7 +165,7 @@ function updateButtons() {
   }
 
   if (elements.flipButton) {
-    elements.flipButton.textContent = state.flipped ? "Show Front" : "Flip";
+    elements.flipButton.textContent = state.flipped ? "Flip to Front" : "Flip to back";
   }
 }
 
@@ -195,8 +196,8 @@ function showCompletionState() {
   elements.controls.hidden = true;
   elements.progress.hidden = true;
 
-  elements.readingText.textContent = "You have completed all the flashcards.";
-  announce("You have completed all the flashcards.");
+  elements.readingText.textContent = "Congratulations! You have completed all the flashcards.";
+  announce("Congratulations! You have completed all the flashcards.");
 
   elements.statusMessage.innerHTML = `
     <div class="end-message">You have completed all the flashcards.</div>
