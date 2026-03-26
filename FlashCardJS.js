@@ -33,12 +33,12 @@ function init() {
   bindEvents();
 
   if (!config.sheetUrl) {
-    showEmptyState("No sheet URL is configured for this flashcard page.");
+    showEmptyState("No sheet URL is configured.");
     return;
   }
 
   if (typeof Papa === "undefined") {
-    showEmptyState("The CSV parser library did not load.");
+    showEmptyState("CSV parser failed to load.");
     return;
   }
 
@@ -66,7 +66,7 @@ async function loadCards() {
     const response = await fetch(config.sheetUrl);
 
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
+      throw new Error();
     }
 
     const csvText = await response.text();
@@ -85,15 +85,14 @@ async function loadCards() {
       }));
 
     if (state.cards.length === 0) {
-      showEmptyState("No valid flashcards were found in the sheet.");
+      showEmptyState("No flashcards found.");
       return;
     }
 
     clearStatus();
     renderCard();
-  } catch (error) {
-    console.error("Failed to load flashcards:", error);
-    showEmptyState("Unable to load flashcards right now.");
+  } catch {
+    showEmptyState("Unable to load flashcards.");
   }
 }
 
@@ -101,30 +100,19 @@ function isValidCardRow(row) {
   return (
     Array.isArray(row) &&
     row.length >= 2 &&
-    row[0] != null &&
-    row[1] != null &&
     String(row[0]).trim() !== "" &&
     String(row[1]).trim() !== ""
   );
 }
 
 function renderCard() {
-  const currentCard = state.cards[state.currentIndex];
-
-  if (!currentCard) {
-    showEmptyState("No flashcard data is available.");
-    return;
-  }
+  const card = state.cards[state.currentIndex];
+  if (!card) return;
 
   state.flipped = false;
 
-  if (elements.cardFront) {
-    elements.cardFront.textContent = currentCard.front;
-  }
-
-  if (elements.cardBack) {
-    elements.cardBack.textContent = currentCard.back;
-  }
+  elements.cardFront.textContent = card.front;
+  elements.cardBack.textContent = card.back;
 
   updateFlipState();
   updateProgress();
@@ -136,43 +124,31 @@ function renderCard() {
 }
 
 function updateFlipState() {
-  if (!elements.cardInner || !elements.cardFront || !elements.cardBack) {
-    return;
-  }
+  if (!elements.cardInner) return;
 
-  if (state.flipped) {
-    elements.cardInner.classList.add("is-flipped");
-  } else {
-    elements.cardInner.classList.remove("is-flipped");
-  }
+  elements.cardInner.classList.toggle("is-flipped", state.flipped);
 }
 
 function updateReadingText() {
-  const currentCard = state.cards[state.currentIndex];
+  const card = state.cards[state.currentIndex];
+  if (!card || !elements.readingText) return;
 
-  if (!currentCard || !elements.readingText) {
-    return;
-  }
+  const side = state.flipped ? "Back" : "Front";
+  const text = state.flipped ? card.back : card.front;
 
-  const visibleSide = state.flipped ? "Back" : "Front";
-  const visibleText = state.flipped ? currentCard.back : currentCard.front;
-  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}: ${visibleText}`;
+  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${side}: ${text}`;
 
   elements.readingText.textContent = message;
   announce(message);
 }
 
 function announce(message) {
-  if (!elements.srAnnounce) {
-    return;
-  }
+  if (!elements.srAnnounce) return;
 
   elements.srAnnounce.textContent = "";
 
-  window.setTimeout(() => {
-    if (elements.srAnnounce) {
-      elements.srAnnounce.textContent = message;
-    }
+  setTimeout(() => {
+    elements.srAnnounce.textContent = message;
   }, 50);
 }
 
@@ -189,26 +165,10 @@ function updateButtons() {
 
   if (elements.flipButton) {
     elements.flipButton.textContent = state.flipped ? "Show Front" : "Flip";
-    elements.flipButton.setAttribute(
-      "aria-label",
-      state.flipped ? "Show front of current flashcard" : "Show back of current flashcard"
-    );
-  }
-
-  if (elements.nextButton) {
-    elements.nextButton.setAttribute("aria-label", "Go to next flashcard");
-  }
-
-  if (elements.backButton) {
-    elements.backButton.setAttribute("aria-label", "Go to previous flashcard");
   }
 }
 
 function flipCard() {
-  if (state.cards.length === 0) {
-    return;
-  }
-
   state.flipped = !state.flipped;
   updateFlipState();
   updateButtons();
@@ -216,56 +176,34 @@ function flipCard() {
 }
 
 function goBack() {
-  if (state.currentIndex === 0) {
-    return;
-  }
-
-  state.currentIndex -= 1;
+  if (state.currentIndex === 0) return;
+  state.currentIndex--;
   renderCard();
 }
 
 function goNext() {
   if (state.currentIndex < state.cards.length - 1) {
-    state.currentIndex += 1;
+    state.currentIndex++;
     renderCard();
-    return;
+  } else {
+    showCompletionState();
   }
-
-  showCompletionState();
 }
 
 function showCompletionState() {
-  if (elements.flashcard) {
-    elements.flashcard.hidden = true;
-  }
+  elements.flashcard.hidden = true;
+  elements.controls.hidden = true;
+  elements.progress.hidden = true;
 
-  if (elements.controls) {
-    elements.controls.hidden = true;
-  }
-
-  if (elements.progress) {
-    elements.progress.hidden = true;
-  }
-
-  if (elements.readingText) {
-    elements.readingText.hidden = false;
-    elements.readingText.textContent = "You have completed all the flashcards.";
-  }
-
+  elements.readingText.textContent = "You have completed all the flashcards.";
   announce("You have completed all the flashcards.");
 
-  if (elements.statusMessage) {
-    elements.statusMessage.innerHTML = `
-      <div class="end-message">You have completed all the flashcards.</div>
-      <div class="restart-wrap">
-        <button id="restart" type="button">Restart</button>
-      </div>
-    `;
-  }
+  elements.statusMessage.innerHTML = `
+    <div class="end-message">You have completed all the flashcards.</div>
+    <button id="restart">Restart</button>
+  `;
 
-  const restartButton = document.getElementById("restart");
-  restartButton?.addEventListener("click", restartCards);
-  restartButton?.focus();
+  document.getElementById("restart")?.addEventListener("click", restartCards);
 }
 
 function restartCards() {
@@ -273,58 +211,30 @@ function restartCards() {
   state.flipped = false;
 
   showMainUI();
-  clearStatus();
   renderCard();
 }
 
 function showMainUI() {
-  if (elements.flashcard) {
-    elements.flashcard.hidden = false;
-  }
-
-  if (elements.controls) {
-    elements.controls.hidden = false;
-  }
-
-  if (elements.progress) {
-    elements.progress.hidden = false;
-  }
-
-  if (elements.readingText) {
-    elements.readingText.hidden = false;
-  }
+  elements.flashcard.hidden = false;
+  elements.controls.hidden = false;
+  elements.progress.hidden = false;
+  elements.readingText.hidden = false;
 }
 
 function showEmptyState(message) {
-  if (elements.flashcard) {
-    elements.flashcard.hidden = true;
-  }
+  elements.flashcard.hidden = true;
+  elements.controls.hidden = true;
+  elements.progress.hidden = true;
 
-  if (elements.controls) {
-    elements.controls.hidden = true;
-  }
-
-  if (elements.progress) {
-    elements.progress.hidden = true;
-  }
-
-  if (elements.readingText) {
-    elements.readingText.hidden = false;
-    elements.readingText.textContent = message;
-  }
-
+  elements.readingText.textContent = message;
   announce(message);
   setStatus(message);
 }
 
 function setStatus(message) {
-  if (elements.statusMessage) {
-    elements.statusMessage.textContent = message;
-  }
+  elements.statusMessage.textContent = message;
 }
 
 function clearStatus() {
-  if (elements.statusMessage) {
-    elements.statusMessage.textContent = "";
-  }
+  elements.statusMessage.textContent = "";
 }
