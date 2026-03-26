@@ -16,7 +16,7 @@ const elements = {
   cardInner: document.getElementById("cardInner"),
   cardFront: document.getElementById("cardFront"),
   cardBack: document.getElementById("cardBack"),
-  srCardText: document.getElementById("srCardText"),
+  srAnnounce: document.getElementById("srAnnounce"),
   readingText: document.getElementById("readingText"),
   progress: document.getElementById("progress"),
   controls: document.getElementById("controls"),
@@ -76,10 +76,6 @@ async function loadCards() {
       skipEmptyLines: true,
     });
 
-    if (parsed.errors?.length) {
-      console.warn("CSV parse warnings:", parsed.errors);
-    }
-
     state.cards = parsed.data
       .slice(config.headerRowsToSkip)
       .filter(isValidCardRow)
@@ -122,24 +118,20 @@ function renderCard() {
 
   state.flipped = false;
 
-  elements.cardFront.textContent = currentCard.front;
-  elements.cardBack.textContent = currentCard.back;
+  if (elements.cardFront) {
+    elements.cardFront.textContent = currentCard.front;
+  }
+
+  if (elements.cardBack) {
+    elements.cardBack.textContent = currentCard.back;
+  }
 
   updateFlipState();
   updateProgress();
   updateButtons();
   updateReadingText();
-  updateButtonLabels();
-  announceCurrentCard();
 
-  elements.flashcard.hidden = false;
-  elements.controls.hidden = false;
-  elements.progress.hidden = false;
-
-  if (elements.readingText) {
-    elements.readingText.hidden = false;
-  }
-
+  showMainUI();
   clearStatus();
 }
 
@@ -150,12 +142,8 @@ function updateFlipState() {
 
   if (state.flipped) {
     elements.cardInner.classList.add("is-flipped");
-    elements.cardFront.setAttribute("aria-hidden", "true");
-    elements.cardBack.setAttribute("aria-hidden", "false");
   } else {
     elements.cardInner.classList.remove("is-flipped");
-    elements.cardFront.setAttribute("aria-hidden", "false");
-    elements.cardBack.setAttribute("aria-hidden", "true");
   }
 }
 
@@ -168,43 +156,23 @@ function updateReadingText() {
 
   const visibleSide = state.flipped ? "Back" : "Front";
   const visibleText = state.flipped ? currentCard.back : currentCard.front;
+  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}: ${visibleText}`;
 
-  elements.readingText.textContent =
-    `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}: ${visibleText}`;
+  elements.readingText.textContent = message;
+  announce(message);
 }
 
-function updateButtonLabels() {
-  if (elements.flipButton) {
-    elements.flipButton.setAttribute(
-      "aria-label",
-      state.flipped ? "Show front of card" : "Show back of card"
-    );
-  }
-
-  if (elements.backButton) {
-    elements.backButton.setAttribute("aria-label", "Go to previous flashcard");
-  }
-
-  if (elements.nextButton) {
-    elements.nextButton.setAttribute("aria-label", "Go to next flashcard");
-  }
-}
-
-function announceCurrentCard() {
-  const currentCard = state.cards[state.currentIndex];
-
-  if (!currentCard || !elements.srCardText) {
+function announce(message) {
+  if (!elements.srAnnounce) {
     return;
   }
 
-  const visibleSide = state.flipped ? "Back" : "Front";
-  const visibleText = state.flipped ? currentCard.back : currentCard.front;
-  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}. ${visibleText}`;
-
-  elements.srCardText.textContent = "";
+  elements.srAnnounce.textContent = "";
 
   window.setTimeout(() => {
-    elements.srCardText.textContent = message;
+    if (elements.srAnnounce) {
+      elements.srAnnounce.textContent = message;
+    }
   }, 50);
 }
 
@@ -218,6 +186,22 @@ function updateButtons() {
   if (elements.backButton) {
     elements.backButton.hidden = state.currentIndex === 0;
   }
+
+  if (elements.flipButton) {
+    elements.flipButton.textContent = state.flipped ? "Show Front" : "Flip";
+    elements.flipButton.setAttribute(
+      "aria-label",
+      state.flipped ? "Show front of current flashcard" : "Show back of current flashcard"
+    );
+  }
+
+  if (elements.nextButton) {
+    elements.nextButton.setAttribute("aria-label", "Go to next flashcard");
+  }
+
+  if (elements.backButton) {
+    elements.backButton.setAttribute("aria-label", "Go to previous flashcard");
+  }
 }
 
 function flipCard() {
@@ -227,9 +211,8 @@ function flipCard() {
 
   state.flipped = !state.flipped;
   updateFlipState();
+  updateButtons();
   updateReadingText();
-  updateButtonLabels();
-  announceCurrentCard();
 }
 
 function goBack() {
@@ -269,18 +252,13 @@ function showCompletionState() {
     elements.readingText.textContent = "You have completed all the flashcards.";
   }
 
-  if (elements.srCardText) {
-    elements.srCardText.textContent = "";
-    window.setTimeout(() => {
-      elements.srCardText.textContent = "You have completed all the flashcards.";
-    }, 50);
-  }
+  announce("You have completed all the flashcards.");
 
   if (elements.statusMessage) {
     elements.statusMessage.innerHTML = `
       <div class="end-message">You have completed all the flashcards.</div>
       <div class="restart-wrap">
-        <button id="restart" type="button" aria-label="Restart flashcards">Restart</button>
+        <button id="restart" type="button">Restart</button>
       </div>
     `;
   }
@@ -294,6 +272,12 @@ function restartCards() {
   state.currentIndex = 0;
   state.flipped = false;
 
+  showMainUI();
+  clearStatus();
+  renderCard();
+}
+
+function showMainUI() {
   if (elements.flashcard) {
     elements.flashcard.hidden = false;
   }
@@ -309,9 +293,6 @@ function restartCards() {
   if (elements.readingText) {
     elements.readingText.hidden = false;
   }
-
-  clearStatus();
-  renderCard();
 }
 
 function showEmptyState(message) {
@@ -332,10 +313,7 @@ function showEmptyState(message) {
     elements.readingText.textContent = message;
   }
 
-  if (elements.srCardText) {
-    elements.srCardText.textContent = "";
-  }
-
+  announce(message);
   setStatus(message);
 }
 
