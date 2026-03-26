@@ -21,16 +21,7 @@
     <div
       id="flashcard"
       class="card"
-      tabindex="0"
-      role="button"
       aria-describedby="cardInstructions"
-      <div
-  id="flashcard"
-  class="card"
-  tabindex="0"
-  role="button"
-  aria-describedby="cardInstructions"
->
     >
       <div id="cardInner" class="card-inner">
         <div id="cardFront" class="card-front" aria-hidden="false"></div>
@@ -39,13 +30,21 @@
     </div>
 
     <p id="cardInstructions" class="sr-only">
-      Press Enter or Space to flip the flashcard.
+      Use the Flip button to reveal the other side of the flashcard.
     </p>
 
     <div
       id="srCardText"
       class="sr-only"
       role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div
+      id="readingText"
+      class="reading-text"
+      tabindex="-1"
       aria-live="polite"
       aria-atomic="true"
     ></div>
