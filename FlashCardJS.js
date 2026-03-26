@@ -17,6 +17,7 @@ const elements = {
   cardFront: document.getElementById("cardFront"),
   cardBack: document.getElementById("cardBack"),
   srCardText: document.getElementById("srCardText"),
+  readingText: document.getElementById("readingText"),
   progress: document.getElementById("progress"),
   controls: document.getElementById("controls"),
   statusMessage: document.getElementById("statusMessage"),
@@ -46,6 +47,7 @@ function init() {
 
 function applyPageTitle() {
   document.title = config.moduleTitle;
+
   if (elements.pageTitle) {
     elements.pageTitle.textContent = config.moduleTitle;
   }
@@ -55,16 +57,6 @@ function bindEvents() {
   elements.flipButton?.addEventListener("click", flipCard);
   elements.backButton?.addEventListener("click", goBack);
   elements.nextButton?.addEventListener("click", goNext);
-
-  elements.flashcard?.addEventListener("click", flipCard);
-  elements.flashcard?.addEventListener("keydown", handleCardKeydown);
-}
-
-function handleCardKeydown(event) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    flipCard();
-  }
 }
 
 async function loadCards() {
@@ -136,16 +128,26 @@ function renderCard() {
   updateFlipState();
   updateProgress();
   updateButtons();
-  updateFlashcardAccessibility();
+  updateReadingText();
+  updateButtonLabels();
   announceCurrentCard();
 
   elements.flashcard.hidden = false;
   elements.controls.hidden = false;
   elements.progress.hidden = false;
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+  }
+
   clearStatus();
 }
 
 function updateFlipState() {
+  if (!elements.cardInner || !elements.cardFront || !elements.cardBack) {
+    return;
+  }
+
   if (state.flipped) {
     elements.cardInner.classList.add("is-flipped");
     elements.cardFront.setAttribute("aria-hidden", "true");
@@ -157,20 +159,35 @@ function updateFlipState() {
   }
 }
 
-function updateFlashcardAccessibility() {
+function updateReadingText() {
   const currentCard = state.cards[state.currentIndex];
 
-  if (!currentCard || !elements.flashcard) {
+  if (!currentCard || !elements.readingText) {
     return;
   }
 
   const visibleSide = state.flipped ? "Back" : "Front";
   const visibleText = state.flipped ? currentCard.back : currentCard.front;
 
-  elements.flashcard.setAttribute(
-    "aria-label",
-    `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}. ${visibleText}. Press Enter or Space to flip.`
-  );
+  elements.readingText.textContent =
+    `Card ${state.currentIndex + 1} of ${state.cards.length}. ${visibleSide}: ${visibleText}`;
+}
+
+function updateButtonLabels() {
+  if (elements.flipButton) {
+    elements.flipButton.setAttribute(
+      "aria-label",
+      state.flipped ? "Show front of card" : "Show back of card"
+    );
+  }
+
+  if (elements.backButton) {
+    elements.backButton.setAttribute("aria-label", "Go to previous flashcard");
+  }
+
+  if (elements.nextButton) {
+    elements.nextButton.setAttribute("aria-label", "Go to next flashcard");
+  }
 }
 
 function announceCurrentCard() {
@@ -192,7 +209,9 @@ function announceCurrentCard() {
 }
 
 function updateProgress() {
-  elements.progress.textContent = `Card ${state.currentIndex + 1} of ${state.cards.length}`;
+  if (elements.progress) {
+    elements.progress.textContent = `Card ${state.currentIndex + 1} of ${state.cards.length}`;
+  }
 }
 
 function updateButtons() {
@@ -208,9 +227,9 @@ function flipCard() {
 
   state.flipped = !state.flipped;
   updateFlipState();
-  updateFlashcardAccessibility();
+  updateReadingText();
+  updateButtonLabels();
   announceCurrentCard();
-  elements.flashcard.focus();
 }
 
 function goBack() {
@@ -220,14 +239,12 @@ function goBack() {
 
   state.currentIndex -= 1;
   renderCard();
-  elements.flashcard.focus();
 }
 
 function goNext() {
   if (state.currentIndex < state.cards.length - 1) {
     state.currentIndex += 1;
     renderCard();
-    elements.flashcard.focus();
     return;
   }
 
@@ -235,9 +252,22 @@ function goNext() {
 }
 
 function showCompletionState() {
-  elements.flashcard.hidden = true;
-  elements.controls.hidden = true;
-  elements.progress.hidden = true;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+    elements.readingText.textContent = "You have completed all the flashcards.";
+  }
 
   if (elements.srCardText) {
     elements.srCardText.textContent = "";
@@ -246,12 +276,14 @@ function showCompletionState() {
     }, 50);
   }
 
-  elements.statusMessage.innerHTML = `
-    <div class="end-message">You have completed all the flashcards.</div>
-    <div class="restart-wrap">
-      <button id="restart" type="button">Restart</button>
-    </div>
-  `;
+  if (elements.statusMessage) {
+    elements.statusMessage.innerHTML = `
+      <div class="end-message">You have completed all the flashcards.</div>
+      <div class="restart-wrap">
+        <button id="restart" type="button" aria-label="Restart flashcards">Restart</button>
+      </div>
+    `;
+  }
 
   const restartButton = document.getElementById("restart");
   restartButton?.addEventListener("click", restartCards);
@@ -262,19 +294,43 @@ function restartCards() {
   state.currentIndex = 0;
   state.flipped = false;
 
-  elements.flashcard.hidden = false;
-  elements.controls.hidden = false;
-  elements.progress.hidden = false;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = false;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = false;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = false;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+  }
 
   clearStatus();
   renderCard();
-  elements.flashcard.focus();
 }
 
 function showEmptyState(message) {
-  elements.flashcard.hidden = true;
-  elements.controls.hidden = true;
-  elements.progress.hidden = true;
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+    elements.readingText.textContent = message;
+  }
 
   if (elements.srCardText) {
     elements.srCardText.textContent = "";
@@ -284,9 +340,13 @@ function showEmptyState(message) {
 }
 
 function setStatus(message) {
-  elements.statusMessage.textContent = message;
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = message;
+  }
 }
 
 function clearStatus() {
-  elements.statusMessage.textContent = "";
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = "";
+  }
 }
