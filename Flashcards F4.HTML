@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flashcards</title>
+
+  <link rel="stylesheet" href="FlashCardStyles.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script defer src="FlashCardJS.js"></script>
+</head>
+<body
+  data-sheet-url="https://docs.google.com/spreadsheets/d/e/2PACX-1vSdxofSyFYFVUOx5b7VL6QFciphRHepIB79lb07gFr0LbNDY_F8Efwe0mpLDtwg4khrPhaPH-CC7CJy/pub?output=csv"
+  data-module-title="Foundations Module 4 Flashcards"
+  data-header-rows="2"
+>
+  <main class="flashcards-page">
+    <h1 id="pageTitle">Flashcards</h1>
+
+    <div id="flashcard" class="card" aria-hidden="true">
+      <div id="cardInner" class="card-inner">
+        <div id="cardFront" class="card-front"></div>
+        <div id="cardBack" class="card-back"></div>
+      </div>
+    </div>
+
+    <div
+      id="srAnnounce"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div id="readingText" class="reading-text" aria-hidden="true"></div>
+
+    <p id="progress" class="progress"></p>
+
+    <div id="controls" class="controls">
+      <button id="flip" type="button">Flip</button>
+      <button id="back" type="button">Back</button>
+      <button id="next" type="button">Next</button>
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+  </main>
+</body>
+</html>
