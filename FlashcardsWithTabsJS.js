@@ -1,0 +1,358 @@
+const config = {
+  sheetUrl: document.body.dataset.sheetUrl || "",
+  moduleTitle: document.body.dataset.moduleTitle || "Flashcards",
+  headerRowsToSkip: Number(document.body.dataset.headerRows || 0),
+};
+
+const state = {
+cards: [],
+allRows: [],
+currentIndex: 0,
+flipped: false,
+activeCategory: 0,
+};
+
+const categoryColumns = [
+  {
+    name: "Foundations",
+    front: 0, // Column A
+    back: 1   // Column B
+  },
+  {
+    name: "Security",
+    front: 3, // Column D
+    back: 4  // Column E
+  },
+  {
+    name: "Automation",
+    front: 6, // Column G
+    back: 7  // Column H
+  },
+  {
+    name: "Apex",
+    front: 9, // Column J
+    back: 10 // Column K
+  }
+];
+
+const elements = {
+  pageTitle: document.getElementById("pageTitle"),
+  flashcard: document.getElementById("flashcard"),
+  cardInner: document.getElementById("cardInner"),
+  cardFront: document.getElementById("cardFront"),
+  cardBack: document.getElementById("cardBack"),
+  srAnnounce: document.getElementById("srAnnounce"),
+  readingText: document.getElementById("readingText"),
+  progress: document.getElementById("progress"),
+  controls: document.getElementById("controls"),
+  statusMessage: document.getElementById("statusMessage"),
+  flipButton: document.getElementById("flip"),
+  backButton: document.getElementById("back"),
+  nextButton: document.getElementById("next"),
+};
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  applyPageTitle();
+  bindEvents();
+
+  if (!config.sheetUrl) {
+    showEmptyState("No sheet URL is configured.");
+    return;
+  }
+
+  if (typeof Papa === "undefined") {
+    showEmptyState("CSV parser failed to load.");
+    return;
+  }
+
+  loadCards();
+}
+
+function applyPageTitle() {
+  document.title = config.moduleTitle;
+
+  if (elements.pageTitle) {
+    elements.pageTitle.textContent = config.moduleTitle;
+  }
+}
+
+function bindEvents() {
+
+  elements.flipButton?.addEventListener("click", flipCard);
+  elements.backButton?.addEventListener("click", goBack);
+  elements.nextButton?.addEventListener("click", goNext);
+
+  document.querySelectorAll(".tab").forEach(tab => {
+
+    tab.addEventListener("click", () => {
+
+      document
+        .querySelectorAll(".tab")
+        .forEach(t => t.classList.remove("active"));
+
+      tab.classList.add("active");
+
+      state.activeCategory = Number(tab.dataset.category);
+
+      loadCategory(state.activeCategory);
+
+    });
+
+  });
+}
+
+async function loadCards() {
+  try {
+    setStatus("Loading flashcards...");
+
+    const response = await fetch(config.sheetUrl);
+
+    if (!response.ok) {
+      throw new Error();
+    }
+
+    const csvText = await response.text();
+
+    const parsed = Papa.parse(csvText, {
+      header: false,
+      skipEmptyLines: true,
+    });
+
+state.allRows = parsed.data.slice(config.headerRowsToSkip);
+
+loadCategory(state.activeCategory);
+
+function loadCategory(categoryIndex) {
+
+  const category = categoryColumns[categoryIndex];
+
+  state.cards = state.allRows
+    .map(row => ({
+      front: String(row[category.front] || "").trim(),
+      back: String(row[category.back] || "").trim(),
+    }))
+    .filter(card =>
+      card.front !== "" &&
+      card.back !== ""
+    );
+
+  state.currentIndex = 0;
+  state.flipped = false;
+
+  if (state.cards.length === 0) {
+    showEmptyState("No flashcards found.");
+    return;
+  }
+
+  renderCard();
+}
+
+    if (state.cards.length === 0) {
+      showEmptyState("No flashcards found.");
+      return;
+    }
+
+    clearStatus();
+    renderCard();
+  } catch {
+    showEmptyState("Unable to load flashcards.");
+  }
+}
+
+function isValidCardRow(row) {
+  return (
+    Array.isArray(row) &&
+    row.length >= 2 &&
+    String(row[0]).trim() !== "" &&
+    String(row[1]).trim() !== ""
+  );
+}
+
+function renderCard() {
+  const card = state.cards[state.currentIndex];
+  if (!card) return;
+
+  state.flipped = false;
+
+  if (elements.cardFront) {
+    elements.cardFront.textContent = card.front;
+  }
+
+  if (elements.cardBack) {
+    elements.cardBack.textContent = card.back;
+  }
+
+  updateFlipState();
+  updateProgress();
+  updateButtons();
+  updateReadingText();
+
+  showMainUI();
+  clearStatus();
+}
+
+function updateFlipState() {
+  if (!elements.cardInner) return;
+
+  elements.cardInner.classList.toggle("is-flipped", state.flipped);
+}
+
+function updateReadingText() {
+  const card = state.cards[state.currentIndex];
+  if (!card || !elements.readingText) return;
+
+  const side = state.flipped ? "Back" : "Front";
+  const text = state.flipped ? card.back : card.front;
+
+  const message = `Card ${state.currentIndex + 1} of ${state.cards.length}. ${side}: ${text}`;
+
+  elements.readingText.textContent = message;
+  announce(message);
+}
+
+function announce(message) {
+  if (!elements.srAnnounce) return;
+
+  elements.srAnnounce.textContent = "";
+
+  setTimeout(() => {
+    if (elements.srAnnounce) {
+      elements.srAnnounce.textContent = message;
+    }
+  }, 50);
+}
+
+function updateProgress() {
+  if (elements.progress) {
+    elements.progress.textContent = `Card ${state.currentIndex + 1} of ${state.cards.length}`;
+  }
+}
+
+function updateButtons() {
+  if (elements.backButton) {
+    elements.backButton.hidden = state.currentIndex === 0;
+  }
+
+  if (elements.flipButton) {
+    elements.flipButton.textContent = state.flipped ? "Flip to Front" : "Flip to Back";
+  }
+}
+
+function flipCard() {
+  if (state.cards.length === 0) return;
+
+  state.flipped = !state.flipped;
+  updateFlipState();
+  updateButtons();
+  updateReadingText();
+}
+
+function goBack() {
+  if (state.currentIndex === 0) return;
+
+  state.currentIndex--;
+  renderCard();
+  elements.flipButton?.focus();
+}
+
+function goNext() {
+  if (state.currentIndex < state.cards.length - 1) {
+    state.currentIndex++;
+    renderCard();
+    elements.flipButton?.focus();
+  } else {
+    showCompletionState();
+  }
+}
+
+function showCompletionState() {
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.textContent =
+      "Congratulations! You have completed all the flashcards.";
+  }
+
+  announce("Congratulations! You have completed all the flashcards.");
+
+  if (elements.statusMessage) {
+    elements.statusMessage.innerHTML = `
+      <div class="end-message">You have completed all the flashcards.</div>
+      <button id="restart" type="button">Restart</button>
+    `;
+  }
+
+  document.getElementById("restart")?.addEventListener("click", restartCards);
+}
+
+function restartCards() {
+  state.currentIndex = 0;
+  state.flipped = false;
+
+  showMainUI();
+  renderCard();
+  elements.flipButton?.focus();
+}
+
+function showMainUI() {
+  if (elements.flashcard) {
+    elements.flashcard.hidden = false;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = false;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = false;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.hidden = false;
+  }
+}
+
+function showEmptyState(message) {
+  if (elements.flashcard) {
+    elements.flashcard.hidden = true;
+  }
+
+  if (elements.controls) {
+    elements.controls.hidden = true;
+  }
+
+  if (elements.progress) {
+    elements.progress.hidden = true;
+  }
+
+  if (elements.readingText) {
+    elements.readingText.textContent = message;
+  }
+
+  announce(message);
+  setStatus(message);
+}
+
+function setStatus(message) {
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = message;
+  }
+}
+
+function clearStatus() {
+  if (elements.statusMessage) {
+    elements.statusMessage.textContent = "";
+  }
+}
