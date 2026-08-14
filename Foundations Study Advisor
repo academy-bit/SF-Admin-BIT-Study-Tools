@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Platform Foundations Study Focus Calculator</title>
+
+  <style>
+    :root {
+      font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: #1f2933;
+      background: #ffffff;
+      line-height: 1.5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 1rem;
+    }
+
+    main {
+      max-width: 62rem;
+      margin: 0 auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      line-height: 1.25;
+    }
+
+    fieldset {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 2px solid #56616b;
+      border-radius: 0.35rem;
+    }
+
+    legend {
+      padding: 0 0.4rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .score-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    label {
+      font-weight: 700;
+    }
+
+    input[type="number"],
+    select {
+      width: 18rem;
+      max-width: 100%;
+      padding: 0.55rem;
+      font: inherit;
+      border: 2px solid #56616b;
+      border-radius: 0.25rem;
+      background: #ffffff;
+    }
+
+    input[type="number"] {
+      width: 9rem;
+    }
+
+    button {
+      min-height: 2.75rem;
+      padding: 0.55rem 0.9rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid #173f5f;
+      border-radius: 0.25rem;
+    }
+
+    button[type="submit"] {
+      color: #ffffff;
+      background: #173f5f;
+    }
+
+    button[type="button"] {
+      color: #173f5f;
+      background: #ffffff;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus,
+    a:focus,
+    [tabindex="-1"]:focus,
+    [tabindex="0"]:focus {
+      outline: 3px solid #ffbf47;
+      outline-offset: 3px;
+    }
+
+    input[aria-invalid="true"] {
+      border-color: #b42318;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .error {
+      min-height: 1.5rem;
+      color: #8a1c13;
+      font-weight: 700;
+    }
+
+    .results {
+      margin-top: 2rem;
+      padding-top: 0.5rem;
+      border-top: 3px solid #173f5f;
+    }
+
+    .panel,
+    .result-summary {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #9aa5ae;
+      border-radius: 0.35rem;
+      background: #f5f8fa;
+    }
+
+    .result-summary p {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .concept-list li {
+      margin-bottom: 0.35rem;
+    }
+
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      margin-top: 0.75rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    caption {
+      margin-bottom: 0.5rem;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    th,
+    td {
+      padding: 0.65rem;
+      border: 1px solid #7b8791;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      background: #e8eef2;
+    }
+
+    .recommended-row th,
+    .recommended-row td {
+      font-weight: 700;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (min-width: 42rem) {
+      .score-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main>
+  <h1>Platform Foundations Study Focus Calculator</h1>
+
+  <p>
+    Submit your latest practice-test scores and The calculator will estimate your
+    weighted score and identify the topic where improvement could help most.
+  </p>
+
+  <form id="calculatorForm" novalidate>
+    <fieldset>
+      <legend>Practice-test scores</legend>
+
+      <p>
+        Enter a score from 0 through 100 for each topic. Decimals are allowed.
+      </p>
+
+      <div class="score-grid">
+        <div class="field-group">
+          <label for="ecosystem">
+            Salesforce Ecosystem — 32%
+          </label>
+
+          <input
+            id="ecosystem"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="100"
+            step="0.01"
+            required
+          >
+        </div>
+
+        <div class="field-group">
+          <label for="navigation">
+            Navigation — 28%
+          </label>
+
+          <input
+            id="navigation"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="100"
+            step="0.01"
+            required
+          >
+        </div>
+
+        <div class="field-group">
+          <label for="dataModel">
+            Data Model — 25%
+          </label>
+
+          <input
+            id="dataModel"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="100"
+            step="0.01"
+            required
+          >
+        </div>
+
+        <div class="field-group">
+          <label for="reports">
+            Reports and Dashboards — 15%
+          </label>
+
+          <input
+            id="reports"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            max="100"
+            step="0.01"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="controls">
+        <button
+          type="submit"
+          aria-controls="resultsSection"
+        >
+          Calculate
+        </button>
+
+        <button
+          id="clearButton"
+          type="button"
+        >
+          Clear
+        </button>
+      </div>
+    </fieldset>
+  </form>
+
+  <p
+    id="formError"
+    class="error"
+    role="alert"
+  ></p>
+
+  <section
+    id="resultsSection"
+    class="results"
+    aria-labelledby="resultsHeading"
+    hidden
+  >
+    <h2 id="resultsHeading">
+      Your results
+    </h2>
+
+    <div
+      id="resultsSummary"
+      class="result-summary"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      tabindex="-1"
+    >
+      <p id="summaryText"></p>
+    </div>
+
+    <p>
+      <a href="#analysisHeading">
+        Jump to the additional analysis table.
+      </a>
+    </p>
+
+    <section
+      class="panel"
+      aria-labelledby="conceptsHeading"
+    >
+      <h3 id="conceptsHeading">
+        Concepts to review
+      </h3>
+
+      <p id="conceptIntro"></p>
+
+      <label for="conceptSelect">
+        Explore a topic
+      </label>
+
+      <select id="conceptSelect"></select>
+
+      <p
+        id="conceptStatus"
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></p>
+
+      <h4 id="selectedConceptHeading"></h4>
+
+      <ul
+        id="conceptList"
+        class="concept-list"
+      ></ul>
+    </section>
+
+    <section aria-labelledby="analysisHeading">
+      <h3 id="analysisHeading">
+        Additional analysis
+      </h3>
+
+      <div
+        class="table-wrap"
+        role="region"
+        aria-labelledby="analysisHeading"
+        tabindex="0"
+      >
+        <table>
+          <caption>
+            Estimated weighted score by topic
+          </caption>
+
+          <thead>
+            <tr>
+              <th scope="col">
+                Topic
+              </th>
+
+              <th scope="col">
+                Weight
+              </th>
+
+              <th scope="col">
+                Your score
+              </th>
+
+              <th scope="col">
+                Points earned
+              </th>
+
+              <th scope="col">
+                Points still available
+              </th>
+
+              <th scope="col">
+                Gain from a 10-point improvement
+              </th>
+            </tr>
+          </thead>
+
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const domains = [
+    {
+      id: "ecosystem",
+      name: "Salesforce Ecosystem",
+      weight: 0.32,
+      concepts: [
+        "Trailhead and other Salesforce learning resources",
+        "Trailblazer Community",
+        "Salesforce Customer 360 products and common business uses",
+        "Agentforce",
+        "Types of Salesforce instances",
+        "The multitenant environment",
+        "Salesforce ecosystem roles and career paths"
+      ]
+    },
+    {
+      id: "navigation",
+      name: "Navigation",
+      weight: 0.28,
+      concepts: [
+        "The App Launcher and navigation bar",
+        "Global search",
+        "List views",
+        "Record pages and related lists",
+        "Personal settings",
+        "Setup and Object Manager"
+      ]
+    },
+    {
+      id: "dataModel",
+      name: "Data Model",
+      weight: 0.25,
+      concepts: [
+        "Standard and custom objects",
+        "Fields and field types",
+        "Object relationships",
+        "Record types and page layouts",
+        "Lead conversion",
+        "Data access, default values, and validation rules"
+      ]
+    },
+    {
+      id: "reports",
+      name: "Reports and Dashboards",
+      weight: 0.15,
+      concepts: [
+        "Report types",
+        "Report fields, filters, and groupings",
+        "Report folders and sharing",
+        "Report formats and exports",
+        "Dashboard components, filters, and refresh options"
+      ]
+    }
+  ];
+
+  const form =
+    document.getElementById("calculatorForm");
+
+  const clearButton =
+    document.getElementById("clearButton");
+
+  const formError =
+    document.getElementById("formError");
+
+  const resultsSection =
+    document.getElementById("resultsSection");
+
+  const resultsSummary =
+    document.getElementById("resultsSummary");
+
+  const summaryText =
+    document.getElementById("summaryText");
+
+  const conceptIntro =
+    document.getElementById("conceptIntro");
+
+  const conceptSelect =
+    document.getElementById("conceptSelect");
+
+  const conceptStatus =
+    document.getElementById("conceptStatus");
+
+  const selectedConceptHeading =
+    document.getElementById("selectedConceptHeading");
+
+  const conceptList =
+    document.getElementById("conceptList");
+
+  const resultsBody =
+    document.getElementById("resultsBody");
+
+  let recommendedDomainId = "ecosystem";
+
+  function formatNumber(value) {
+    return value
+      .toFixed(2)
+      .replace(/\.00$/, "")
+      .replace(/(\.\d)0$/, "$1");
+  }
+
+  function formatPercent(value) {
+    return `${formatNumber(value)}%`;
+  }
+
+  function populateConceptOptions() {
+    domains.forEach(function (domain) {
+      const option =
+        document.createElement("option");
+
+      option.value = domain.id;
+      option.textContent = domain.name;
+
+      conceptSelect.appendChild(option);
+    });
+  }
+
+  function renderConcepts(
+    domainId,
+    announceChange
+  ) {
+    const domain =
+      domains.find(function (item) {
+        return item.id === domainId;
+      });
+
+    if (!domain) {
+      return;
+    }
+
+    selectedConceptHeading.textContent =
+      domain.name;
+
+    conceptList.innerHTML = "";
+
+    domain.concepts.forEach(function (concept) {
+      const item =
+        document.createElement("li");
+
+      item.textContent = concept;
+
+      conceptList.appendChild(item);
+    });
+
+    if (announceChange) {
+      conceptStatus.textContent = "";
+
+      window.setTimeout(function () {
+        conceptStatus.textContent =
+          `${domain.name} concepts are now displayed below.`;
+      }, 50);
+    }
+  }
+
+  function clearValidation() {
+    formError.textContent = "";
+
+    domains.forEach(function (domain) {
+      document
+        .getElementById(domain.id)
+        .removeAttribute("aria-invalid");
+    });
+  }
+
+  function readScores() {
+    clearValidation();
+
+    const invalidInputs = [];
+
+    const rows =
+      domains.map(function (domain) {
+        const input =
+          document.getElementById(domain.id);
+
+        const rawValue =
+          input.value.trim();
+
+        const score =
+          Number(rawValue);
+
+        if (
+          rawValue === "" ||
+          !Number.isFinite(score) ||
+          score < 0 ||
+          score > 100
+        ) {
+          input.setAttribute(
+            "aria-invalid",
+            "true"
+          );
+
+          invalidInputs.push(input);
+        }
+
+        return {
+          id: domain.id,
+          name: domain.name,
+          weight: domain.weight,
+          score: score
+        };
+      });
+
+    if (invalidInputs.length > 0) {
+      formError.textContent =
+        "Enter a valid score from 0 through 100 for every topic.";
+
+      resultsSection.hidden = true;
+
+      invalidInputs[0].focus();
+
+      return null;
+    }
+
+    return rows;
+  }
+
+  function buildTable(
+    rows,
+    recommendedId
+  ) {
+    resultsBody.innerHTML = "";
+
+    rows.forEach(function (row) {
+      const tableRow =
+        document.createElement("tr");
+
+      if (row.id === recommendedId) {
+        tableRow.className =
+          "recommended-row";
+      }
+
+      const rowHeader =
+        document.createElement("th");
+
+      rowHeader.scope = "row";
+      rowHeader.textContent = row.name;
+
+      if (row.id === recommendedId) {
+        const priorityText =
+          document.createElement("span");
+
+        priorityText.className =
+          "sr-only";
+
+        priorityText.textContent =
+          " — recommended starting point";
+
+        rowHeader.appendChild(
+          priorityText
+        );
+      }
+
+      tableRow.appendChild(rowHeader);
+
+      [
+        formatPercent(
+          row.weight * 100
+        ),
+        formatPercent(
+          row.score
+        ),
+        formatNumber(
+          row.pointsEarned
+        ),
+        formatNumber(
+          row.pointsAvailable
+        ),
+        formatNumber(
+          row.tenPointGain
+        )
+      ].forEach(function (value) {
+        const cell =
+          document.createElement("td");
+
+        cell.textContent = value;
+
+        tableRow.appendChild(cell);
+      });
+
+      resultsBody.appendChild(tableRow);
+    });
+  }
+
+  function calculateResults() {
+    const rows = readScores();
+
+    if (!rows) {
+      return;
+    }
+
+    rows.forEach(function (row) {
+      row.pointsEarned =
+        row.score * row.weight;
+
+      row.pointsAvailable =
+        (100 - row.score) * row.weight;
+
+      row.tenPointGain =
+        (
+          Math.min(
+            100,
+            row.score + 10
+          ) -
+          row.score
+        ) * row.weight;
+    });
+
+    const estimatedScore =
+      rows.reduce(function (total, row) {
+        return total + row.pointsEarned;
+      }, 0);
+
+    const ranked =
+      rows.slice().sort(function (a, b) {
+        if (
+          Math.abs(
+            b.pointsAvailable -
+            a.pointsAvailable
+          ) > 0.000001
+        ) {
+          return (
+            b.pointsAvailable -
+            a.pointsAvailable
+          );
+        }
+
+        if (a.score !== b.score) {
+          return a.score - b.score;
+        }
+
+        return b.weight - a.weight;
+      });
+
+    const topDomain =
+      ranked[0];
+
+    const secondDomain =
+      ranked[1];
+
+    const hasOpportunity =
+      topDomain.pointsAvailable > 0.000001;
+
+    recommendedDomainId =
+      topDomain.id;
+
+    let summaryMessage;
+
+    if (hasOpportunity) {
+      summaryMessage =
+        `Estimated weighted score: ` +
+        `${formatPercent(estimatedScore)}. ` +
+        `You could gain as much as ` +
+        `${formatNumber(topDomain.pointsAvailable)} ` +
+        `percentage points by studying ` +
+        `${topDomain.name}.`;
+
+      if (
+        secondDomain &&
+        secondDomain.pointsAvailable > 0.000001
+      ) {
+        summaryMessage +=
+          ` If you're tired of ${topDomain.name}, ` +
+          `consider ${secondDomain.name}.`;
+      }
+
+      summaryMessage +=
+        ` For more analysis, check out the table below.`;
+
+      conceptIntro.textContent =
+        `Based on your results, ${topDomain.name} is selected by default.  ` +
+        `Explore other topics by selecting from the list below.`;
+    } else {
+      summaryMessage =
+        `Estimated weighted score: ` +
+        `${formatPercent(estimatedScore)}. ` +
+        `Your scores are 100% in every topic. ` +
+        `For more analysis, check out the table below.`;
+
+      conceptIntro.textContent =
+        "Explore other topics by selecting from the list below.";
+    }
+
+    conceptSelect.value =
+      recommendedDomainId;
+
+    renderConcepts(
+      recommendedDomainId,
+      false
+    );
+
+    buildTable(
+      rows,
+      hasOpportunity
+        ? recommendedDomainId
+        : ""
+    );
+
+    summaryText.textContent = "";
+    resultsSection.hidden = false;
+
+    window.setTimeout(function () {
+      summaryText.textContent =
+        summaryMessage;
+
+      resultsSummary.focus();
+    }, 75);
+  }
+
+  form.addEventListener(
+    "submit",
+    function (event) {
+      event.preventDefault();
+      calculateResults();
+    }
+  );
+
+  clearButton.addEventListener(
+    "click",
+    function () {
+      form.reset();
+      clearValidation();
+
+      resultsSection.hidden = true;
+      summaryText.textContent = "";
+      resultsBody.innerHTML = "";
+
+      document
+        .getElementById("ecosystem")
+        .focus();
+    }
+  );
+
+  conceptSelect.addEventListener(
+    "change",
+    function () {
+      renderConcepts(
+        conceptSelect.value,
+        true
+      );
+    }
+  );
+
+  domains.forEach(function (domain) {
+    document
+      .getElementById(domain.id)
+      .addEventListener(
+        "input",
+        function (event) {
+          event.target.removeAttribute(
+            "aria-invalid"
+          );
+
+          if (formError.textContent) {
+            formError.textContent = "";
+          }
+        }
+      );
+  });
+
+  populateConceptOptions();
+})();
+</script>
+</body>
+</html>
