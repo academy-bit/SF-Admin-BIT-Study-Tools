@@ -1,0 +1,355 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  background: #f4f6f8;
+  color: #1f2933;
+}
+
+button {
+  font-family: inherit;
+}
+
+.flashcards-page {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.topics-section {
+  margin-bottom: 1.5rem;
+}
+
+.topics-heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.topic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.topic-tab {
+  appearance: none;
+  border: 1px solid #bcccdc;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #102a43;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.topic-tab:hover {
+  background: #f0f4f8;
+}
+
+.topic-tab.is-selected {
+  background: #102a43;
+  color: #ffffff;
+  border-color: #102a43;
+}
+
+.topic-tab:focus-visible {
+  outline: 3px solid #486581;
+  outline-offset: 2px;
+}
+
+.flashcards-panel {
+  width: 100%;
+}
+
+.selected-topic-heading {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+/*
+  Flashcard
+*/
+
+.card {
+  margin-top: 1rem;
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 18rem;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1.5rem;
+
+  border: 2px solid #d9e2ec;
+  border-radius: 0.75rem;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0.25rem 0.75rem
+    rgba(15, 23, 42, 0.08);
+
+  font-size: 1.25rem;
+  text-align: center;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.card-front > div,
+.card-back > div {
+  width: 100%;
+}
+
+.card-side-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #52606d;
+}
+
+.card-content {
+  display: block;
+  word-break: break-word;
+}
+
+/*
+  Reading text
+*/
+
+.reading-text {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+
+  border: 1px solid #cbd2d9;
+  border-radius: 0.5rem;
+
+  background: #ffffff;
+
+  font-size: 1rem;
+  line-height: 1.6;
+
+  white-space: normal;
+  word-break: break-word;
+}
+
+/*
+  Progress
+*/
+
+.progress {
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/*
+  Controls
+*/
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+button {
+  appearance: none;
+
+  border: 1px solid #bcccdc;
+  border-radius: 0.5rem;
+
+  background: #ffffff;
+  color: #102a43;
+
+  padding: 0.75rem 1rem;
+
+  font-size: 1rem;
+  line-height: 1.2;
+
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f0f4f8;
+}
+
+button:focus-visible {
+  outline: 3px solid #486581;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background: #ffffff;
+}
+
+/*
+  Status
+*/
+
+.status-message {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.error-message {
+  padding: 1rem;
+
+  border: 1px solid #d9a5a5;
+  border-radius: 0.5rem;
+
+  background: #fff5f5;
+}
+
+.end-message {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.completion-section {
+  margin-top: 1rem;
+  padding: 1rem;
+
+  border: 1px solid #cbd2d9;
+  border-radius: 0.5rem;
+
+  background: #ffffff;
+}
+
+.restart-wrap {
+  margin-top: 0.5rem;
+}
+
+.restart-button {
+  min-width: 7rem;
+}
+
+/*
+  Screen reader only
+*/
+
+.sr-only {
+  position: absolute !important;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+/*
+  Hidden
+*/
+
+[hidden] {
+  display: none !important;
+}
+
+/*
+  Mobile
+*/
+
+@media (max-width: 640px) {
+  .flashcards-page {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .selected-topic-heading {
+    font-size: 1.3rem;
+  }
+
+  .card-inner {
+    min-height: 14rem;
+  }
+
+  .card-front,
+  .card-back {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  .topic-tabs {
+    flex-direction: column;
+  }
+
+  .topic-tab {
+    width: 100%;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .controls button {
+    width: 100%;
+  }
+
+  .reading-text {
+    font-size: 0.95rem;
+  }
+}
