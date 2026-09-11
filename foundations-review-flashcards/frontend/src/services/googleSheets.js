@@ -2,8 +2,8 @@
 
 // Published CSV links for each sheet
 const SHEET_URLS = {
-  Tab1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRD_6Fk1L-mHVpV_4Y9j671Xdh9ABEpY77T6mfA_T6UPMO-Pd4nxAetXLckjjesf0ARd_1OQ6NDfJc/pub?gid=0&single=true&output=csv",
-  Tab2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRD_6Fk1L-mHVpV_4Y9j671Xdh9ABEpY77T6mfA_T6UPMO-Pd4nxAetXLckjjesf0ARd_1OQ6NDfJc/pub?gid=441005967&single=true&output=csv",
+  Tab1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRD_6Fk1L-mHVpV_4Y9j671Xdh9ABEpY77T6mfA_T6UPMO-Pd4nxAetXLckjjesf0ARd_1OQ6NDfJc/pub?output=csv",
+  Tab2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRD_6Fk1L-mHVpV_4Y9j671Xdh9ABEpY77T6mfA_T6UPMO-Pd4nxAetXLckjjesf0ARd_1OQ6NDfJc/pub?output=csv",
   Tab3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJxKM7J9Y95fgcq2fQuZORzDLMXXbCGLD7iyt8a4VOb0Dwq4CF_aoSLAyJaZIu-pGnamYjEkduzq01/pub?gid=1764686075&single=true&output=csv",
   Tab4: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQJxKM7J9Y95fgcq2fQuZORzDLMXXbCGLD7iyt8a4VOb0Dwq4CF_aoSLAyJaZIu-pGnamYjEkduzq01/pub?gid=228918049&single=true&output=csv",
 };
