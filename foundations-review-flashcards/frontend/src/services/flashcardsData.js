@@ -1,5 +1,5 @@
 const SPREADSHEET_ID =
-  "1dpKcypRDQ41zYjEtkktZKktGUpJTR3gtR4V3W9alW04/";
+  "1dpKcypRDQ41zYjEtkktZKktGUpJTR3gtR4V3W9alW04";
 
 /*
   Your spreadsheet structure is:
